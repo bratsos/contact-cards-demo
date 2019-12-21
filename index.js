@@ -3,6 +3,10 @@ import ReactDOM from "react-dom";
 import styled, { createGlobalStyle } from 'styled-components';
 import { configJson, extractUsersByKey, fillLettersWithUsers } from './helpers';
 
+import Tabs from './Tabs';
+
+const { TabPane } = Tabs;
+
 const App = () => {
   const [usersByLetter, setUsersByLetter] = React.useState({});
 
@@ -23,11 +27,29 @@ const App = () => {
       <GlobalStyles />
       <h1>Contacts app</h1>
       <ContanctCardDiv>
+      <Tabs
+        defaultActiveKey={configJson.tabs[0]}
+      >
+        {
+          Object.keys(usersByLetter).map(letter => {
+            return (
+              <TabPane key={letter} tab={<span>{letter}</span>}>
+                <ContactCard letter={letter} users={usersByLetter[letter]} />
+              </TabPane>
+            )
+          })
+        }
+      </Tabs>
       </ContanctCardDiv>
     </WrapperDiv>
   )
 };
-)
+
+const ContactCard = ({ letter, users }) => {
+  return (
+    <p>{letter} <code>{JSON.stringify(users.map(user => user.name.last))}</code></p>
+  )
+}
 
 const ContanctCardDiv = styled.div`
   width: 90%;
