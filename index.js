@@ -1,8 +1,22 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import styled, { createGlobalStyle } from 'styled-components';
+import { configJson, extractUsersByKey, fillLettersWithUsers } from './helpers';
 
 const App = () => {
+  const [usersByLetter, setUsersByLetter] = React.useState({});
+
+  React.useEffect(() => {
+    fetch('https://randomuser.me/api/?results=100&nat=NL')
+      .then(response => response.json())
+      .then(data => {
+        const usersByLastLetter = extractUsersByKey('name.last', data.results);
+
+        const tabsLettersWithUsers = fillLettersWithUsers(configJson.tabs, usersByLastLetter)
+
+        setUsersByLetter(tabsLettersWithUsers);
+      })
+  }, [])
 
   return (
     <WrapperDiv>
