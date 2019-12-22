@@ -4,8 +4,11 @@ import styled, { createGlobalStyle } from 'styled-components';
 import { configJson, extractUsersByKey, fillLettersWithUsers } from './helpers';
 
 import Tabs from './Tabs';
+import ContactCard from './ContactCard';
 
 const { TabPane } = Tabs;
+
+const noop = () => null;
 
 const App = () => {
   const [usersByLetter, setUsersByLetter] = React.useState({});
@@ -26,43 +29,72 @@ const App = () => {
     <WrapperDiv>
       <GlobalStyles />
       <h1>Contacts app</h1>
-      <ContanctCardDiv>
-      <Tabs
-        defaultActiveKey={configJson.tabs[0]}
-      >
-        {
-          Object.keys(usersByLetter).map(letter => {
-            return (
-              <TabPane key={letter} tab={<span>{letter}</span>}>
-                <ContactCard letter={letter} users={usersByLetter[letter]} />
-              </TabPane>
-            )
-          })
-        }
-      </Tabs>
-      </ContanctCardDiv>
+      <ContactCardAppDiv>
+        <Tabs
+          defaultActiveKey={configJson.tabs[0]}
+        >
+          {
+            Object.keys(usersByLetter).map(letter => {
+              const contactsCount = usersByLetter[letter].length
+              const hasNoContacts = contactsCount === 0;
+              const tabComponent = (
+                <p className={hasNoContacts ? 'disabled' : ''}>
+                  {letter}
+                  <span>({contactsCount})</span>
+                </p>
+              )
+              return (
+                <TabPane
+                  key={letter}
+                  tab={tabComponent}
+                  onClick={hasNoContacts ? noop : undefined}
+                >
+                  <ContactCard letter={letter} users={usersByLetter[letter]} />
+                </TabPane>
+              )
+            })
+          }
+        </Tabs>
+      </ContactCardAppDiv>
     </WrapperDiv>
   )
 };
 
-const ContactCard = ({ letter, users }) => {
-  return (
-    <p>{letter} <code>{JSON.stringify(users.map(user => user.name.last))}</code></p>
-  )
-}
-
-const ContanctCardDiv = styled.div`
+const ContactCardAppDiv = styled.div`
   width: 90%;
   height: 400px;
   max-width: 1280px;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, .15);
   border-radius: 4px;
   background: #fff;
+
+  button {
+    p {
+      margin: 0 5px;
+      padding: 4px 8px;
+      font-size: 24px;
+      display: flex;
+      align-items: baseline;
+
+      &.disabled {
+        color: #bdbdbd;
+      }
+
+      span {
+        font-size: 10px;
+        margin-left: 5px;
+      }
+    }
+  }
 `
 const GlobalStyles = createGlobalStyle`
   body {
     background-image: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);
     height: 100vh;
+  }
+
+  * {
+    box-sizing: border-box;
   }
 `
 
