@@ -4,6 +4,7 @@ import styled, { createGlobalStyle } from 'styled-components';
 import { configJson, extractUsersByKey, fillLettersWithUsers } from './helpers';
 
 import Tabs from './Tabs';
+import Modal from './Modal';
 import ContactCard from './ContactCard';
 
 const { TabPane } = Tabs;
@@ -12,6 +13,7 @@ const noop = () => null;
 
 const App = () => {
   const [usersByLetter, setUsersByLetter] = React.useState({});
+  const [modalContent, setModalContent] = React.useState(null);
 
   React.useEffect(() => {
     fetch('https://randomuser.me/api/?results=100&nat=NL')
@@ -24,6 +26,14 @@ const App = () => {
         setUsersByLetter(tabsLettersWithUsers);
       })
   }, [])
+
+  const openModalWithContent = content => {
+    if (!React.isValidElement(content)) return;
+
+    setModalContent(content);
+  }
+
+  const closeModal = () => setModalContent(null);
 
   return (
     <WrapperDiv>
@@ -49,13 +59,24 @@ const App = () => {
                   tab={tabComponent}
                   onClick={hasNoContacts ? noop : undefined}
                 >
-                  <ContactCard letter={letter} users={usersByLetter[letter]} />
+                  <ContactCard
+                    letter={letter}
+                    users={usersByLetter[letter]}
+                    openModalWithContent={openModalWithContent}
+                    closeModal={closeModal}
+                  />
                 </TabPane>
               )
             })
           }
         </Tabs>
       </ContactCardAppDiv>
+      <Modal
+        isOpen={modalContent !== null}
+        onClose={closeModal}
+      >
+        {modalContent}
+      </Modal>
     </WrapperDiv>
   )
 };
@@ -64,6 +85,7 @@ const ContactCardAppDiv = styled.div`
   width: 90%;
   height: 400px;
   max-width: 1280px;
+
   box-shadow: 0px 4px 4px rgba(0, 0, 0, .15);
   border-radius: 4px;
   background: #fff;

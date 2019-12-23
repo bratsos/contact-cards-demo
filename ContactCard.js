@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const ContactCard = ({ users }) => {
+const ContactCard = ({ users, openModalWithContent }) => {
   console.log({users})
   return (
     <Wrapper>
@@ -10,11 +10,18 @@ const ContactCard = ({ users }) => {
           return (
             <div className="user-row">
               { user.name.first}, {user.name.last.toUpperCase()}
+              <button onClick={() => openModalWithContent(<ExpandedContactCard user={user} />)}>🔍</button>
             </div>
           )
         })
       }
     </Wrapper>
+  )
+}
+
+const ExpandedContactCard = ({ user }) => {
+  return (
+    <p>user: {user.name.first}</p>
   )
 }
 
@@ -30,6 +37,16 @@ const Wrapper = styled.div`
     padding: 10px 0;
     margin: 10px 20px;
     border-bottom: 1px solid rgba(0,0,0,.15);
+    position: relative;
+    max-width: 50%;
+
+    button {
+      position: absolute;
+      right: 0px;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
   }
 `
 
