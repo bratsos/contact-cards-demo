@@ -1,16 +1,20 @@
 import React from 'react';
 import styled from 'styled-components';
+import UserRow from './UserRow';
 
 const ContactCard = ({ users }) => {
   console.log({users})
   return (
     <Wrapper>
       {
-        users.map(user => {
+        users.map((user) => {
           return (
-            <div className="user-row">
-              { user.name.first}, {user.name.last.toUpperCase()}
-            </div>
+            <UserRow
+              key={user.id}
+              isOpen={user.id === expandedUserId}
+              user={user}
+              handleExpandButton={handleExpandButton}
+            />
           )
         })
       }
@@ -25,12 +29,6 @@ const Wrapper = styled.div`
   flex-wrap: wrap;
   padding: 10px;
   overflow-x: auto;
-
-  .user-row {
-    padding: 10px 0;
-    margin: 10px 20px;
-    border-bottom: 1px solid rgba(0,0,0,.15);
-  }
 `
 
 export default ContactCard;
