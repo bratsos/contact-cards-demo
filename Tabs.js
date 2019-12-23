@@ -5,7 +5,27 @@ import useForceRender from './useForceRerender';
 const Tabs = ({ defaultActiveKey, children }) => {
   const [localActiveKey, setLocalActiveKey] = React.useState(defaultActiveKey || controls[0]);
   const [scrollSpace, setScrollSpace] = React.useState(0);
+  const [holdingMousedownDirection, setHoldingMousedownDirection] = React.useState('');
   const forceRender = useForceRender();
+
+  const holdingDownInterval = React.useRef(null);
+
+  React.useEffect(() => {
+    if (!holdingDownInterval) return;
+
+    holdingDownInterval.current = setInterval(() => {
+      switch (holdingMousedownDirection) {
+        case 'left':
+          return scrollStepLeft();
+        case 'right':
+          return scrollStepRight();
+        default:
+          return;
+      }
+    }, 100)
+
+    return () => clearInterval(holdingDownInterval.current)
+  }, [holdingMousedownDirection])
 
   const activeChild = Array.isArray(children)
     && children.find(child => {
@@ -24,6 +44,13 @@ const Tabs = ({ defaultActiveKey, children }) => {
     forceRender()
   }
 
+  const handleMousedown = direction => () => setHoldingMousedownDirection(direction)
+
+  const handleMouseup = () => {
+    setHoldingMousedownDirection(null)
+    clearInterval(holdingDownInterval.current);
+  }
+
   return (
     <Wrapper>
       <div className="controls-wrapper">
@@ -35,7 +62,14 @@ const Tabs = ({ defaultActiveKey, children }) => {
         }}>
           {
             controlsRef.current.scrollLeft > 0 &&
-            <button className="scroll-control" onClick={scrollStepLeft}>👈🏾</button>
+            <button
+              className="scroll-control"
+              onClick={scrollStepLeft}
+              onMouseDown={handleMousedown('left')}
+              onMouseUp={handleMouseup}
+            >
+              👈🏾
+            </button>
           }
           {
             React.Children.map(children, child => (
@@ -54,7 +88,14 @@ const Tabs = ({ defaultActiveKey, children }) => {
           }
           {
             scrollSpace > 0 && controlsRef.current.scrollLeft < scrollSpace &&
-            <button className="scroll-control" onClick={scrollStepRight}>👉🏾</button>
+            <button
+              className="scroll-control"
+              onClick={scrollStepRight}
+              onMouseDown={handleMousedown('right')}
+              onMouseUp={handleMouseup}
+            >
+              👉🏾
+            </button>
           }
         </div>
       </div>
