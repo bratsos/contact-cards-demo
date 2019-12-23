@@ -10,6 +10,18 @@ const { TabPane } = Tabs;
 
 const noop = () => null;
 
+const userInfoSelector = user => ({
+  id: user.id.value,
+  firstName: user.name.first,
+  lastName: user.name.last,
+  'e-mail': user.email,
+  phone: user.phone,
+  city: user.location.city,
+  state: user.location.state,
+  postcode: user.location.postcode,
+  picture: user.picture.thumbnail
+})
+
 const App = () => {
   const [usersByLetter, setUsersByLetter] = React.useState({});
 
@@ -49,7 +61,7 @@ const App = () => {
                   tab={tabComponent}
                   onClick={hasNoContacts ? noop : undefined}
                 >
-                  <ContactCard letter={letter} users={usersByLetter[letter]} />
+                  <ContactCard letter={letter} users={usersByLetter[letter].map(userInfoSelector)} />
                 </TabPane>
               )
             })
