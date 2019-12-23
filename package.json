@@ -16,7 +16,8 @@
   },
   "scripts": {
     "start": "parcel index.html",
-    "test": "jest --watch"
+    "test": "jest --watch",
+    "build": "parcel index.html --public-url /contact-cards-demo/"
   },
   "devDependencies": {
     "@babel/core": "^7.7.7"
