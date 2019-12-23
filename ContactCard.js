@@ -3,7 +3,17 @@ import styled from 'styled-components';
 import UserRow from './UserRow';
 
 const ContactCard = ({ users }) => {
-  console.log({users})
+  const [expandedUserId, setExpandedUserId] = React.useState(null);
+
+  const handleExpandButton = id => {
+    if (id === expandedUserId) {
+      setExpandedUserId(null);
+      return;
+    }
+
+    setExpandedUserId(id);
+  }
+
   return (
     <Wrapper>
       {
